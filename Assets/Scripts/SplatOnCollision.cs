@@ -86,36 +86,32 @@ public class SplatOnCollision : MonoBehaviour {
 
 		channelMask = projectileColor;
 
-		Ray ray = new Ray(contact.point + contact.normal, -contact.normal);
-			RaycastHit hit;
-			if( contact.otherCollider.Raycast( ray, out hit, 100 ) ){
+		
+		Vector3 leftVec = Vector3.Cross ( contact.normal, Vector3.up );
+		float randScale = Random.Range(0.5f,1.5f);
 				
-				Vector3 leftVec = Vector3.Cross ( hit.normal, Vector3.up );
-				float randScale = Random.Range(0.5f,1.5f);
-				
-				GameObject newSplatObject = new GameObject();
-				newSplatObject.transform.position = hit.point;
-				if( leftVec.magnitude > 0.001f ){
-					newSplatObject.transform.rotation = Quaternion.LookRotation( leftVec, hit.normal );
-				}
-				newSplatObject.transform.RotateAround( hit.point, hit.normal, Random.Range(-180, 180 ) );
-				newSplatObject.transform.localScale = new Vector3( randScale, randScale * 0.5f, randScale ) * splatScale;
+		GameObject newSplatObject = new GameObject();
+		newSplatObject.transform.position = contact.point;
+		if( leftVec.magnitude > 0.001f ){
+			newSplatObject.transform.rotation = Quaternion.LookRotation( leftVec, contact.normal );
+		}
+		newSplatObject.transform.RotateAround( contact.point, contact.normal, Random.Range(-180, 180 ) );
+		newSplatObject.transform.localScale = new Vector3( randScale, randScale * 0.5f, randScale ) * splatScale;
 
-				Splat newSplat;
-				newSplat.splatMatrix = newSplatObject.transform.worldToLocalMatrix;
-				newSplat.channelMask = channelMask;
+		Splat newSplat;
+		newSplat.splatMatrix = newSplatObject.transform.worldToLocalMatrix;
+		newSplat.channelMask = channelMask;
 
-				float splatscaleX = 1.0f / splatsX;
-				float splatscaleY = 1.0f / splatsY;
-				float splatsBiasX = Mathf.Floor( Random.Range(0,splatsX * 0.99f) ) / splatsX;
-				float splatsBiasY = Mathf.Floor( Random.Range(0,splatsY * 0.99f) ) / splatsY;
+		float splatscaleX = 1.0f / splatsX;
+		float splatscaleY = 1.0f / splatsY;
+		float splatsBiasX = Mathf.Floor( Random.Range(0,splatsX * 0.99f) ) / splatsX;
+		float splatsBiasY = Mathf.Floor( Random.Range(0,splatsY * 0.99f) ) / splatsY;
 
-				newSplat.scaleBias = new Vector4(splatscaleX, splatscaleY, splatsBiasX, splatsBiasY );
+		newSplat.scaleBias = new Vector4(splatscaleX, splatscaleY, splatsBiasX, splatsBiasY );
 
-				SplatManagerSystem.instance.AddSplat (newSplat);
+		SplatManagerSystem.instance.AddSplat (newSplat);
 
-				GameObject.Destroy( newSplatObject );
-			}
+		GameObject.Destroy( newSplatObject );
 	}
 
 }
